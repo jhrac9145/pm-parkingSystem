@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>이미지, 서버전송</title>
+
+  <link rel="stylesheet" href="../static/index.css">
+
+  <!-- jQuery를 import-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+    let img = null; // 이미지 변수 추가
+
+    function imgToBase64ByFileReader(url) {
+      return new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          let reader = new FileReader();
+          reader.onloadend = function () {
+            resolve(reader.result);
+          }
+          reader.readAsDataURL(xhr.response);
+        }
+        xhr.open('GET', url);
+        xhr.responseType = 'blob';
+        xhr.send();
+      });
+    }
+
+    function loadFile(input) {
+      let file = input.files[0]; // 선택된 파일 가져오기
+
+      // 이미지 source 가져오기
+      imgToBase64ByFileReader(URL.createObjectURL(file)).then((base64Img) => {
+        img = base64Img; // 이미지 변수에 base64 이미지 저장
+        let newImage = document.createElement("img"); // 새 이미지 추가
+        newImage.src = img; // base64 이미지 설정
+        newImage.style.width = "100%";
+        newImage.style.height = "100%";
+        newImage.style.objectFit = "cover";
+
+        // 이미지를 addImage div에 추가
+        document.getElementById('image-show').appendChild(newImage);
+        // 이미지를 추가한 후 버튼을 활성화
+        document.getElementById('save-button').disabled = false;
+      });
+    }
+
+    function download_img() {
+      $.ajax({
+        type: "GET",
+        url: "/api/imgdown",
+        data: {},
+        success: function (response) { // 성공하면
+          let dwnImg = response['downimg'];
+          for (let i = 0; i < dwnImg.length; i++) {
+            // 새 이미지 만들기
+            let newImage = document.createElement("img");
+            newImage.src = dwnImg[i]['img'];
+            // div에 새 이미지 추가
+            let container = document.getElementById('addimg'); // ID 수정
+            container.appendChild(newImage);
+          }
+        }
+      });
+    }
+
+    function upload_img() {
+      $.ajax({
+        type: "POST",
+        url: "/api/uploading",
+        data: { img: img }, // 이미지 변수를 전송
+        success: function (response) {
+          window.location.reload();
+        }
+      });
+    }
+  </script>
+
+</head>
+
+<body class="body">
+  <!-- 이미지 파일 데이터에 알맞는 enctype 설정 -->
+  <form class="inputImg" method="post" enctype="multipart/form-data">
+    <!-- 이미지 띄울 공간 -->
+    <div class="addImage" id="image-show">
+
+    </div>
+    <input type="file" accept="image/*" onchange="loadFile(this)">
+  </form>
+
+  <button id="save-button" onclick="upload_img()" type="button" disabled>저장하기</button>
+  <button onclick="download_img()" , type="button">이미지 다운</button>
+  <!--서버에서 이미지를 가져와서 띄울 공간-->
+  <div id="addimg">
+
+  </div>
+</body>
+
+</html>
