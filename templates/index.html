@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>이미지, 서버전송</title>
+  <title>VGG-16 전이학습을 활용한 공유킥보드 불법 주정차 분류 모델</title>
 
   <link rel="stylesheet" href="../static/index.css">
 
@@ -76,6 +76,18 @@
         }
       });
     }
+
+    // 분류결과 호출 기능 추가 코드
+    function result() {
+      $.ajax({
+        type: "GET",
+        url: "/api/get_classification_result",
+        data: {'img': img}, // 이미지 변수를 전송
+        success: function (response) {
+          $('#classification-result').text(response.classification_result);
+        }
+      });
+    }
   </script>
 
 </head>
@@ -90,7 +102,12 @@
     <input type="file" accept="image/*" onchange="loadFile(this)">
   </form>
 
-  <button id="save-button" onclick="upload_img()" type="button" disabled>저장하기</button>
+  <button id="save-button" onclick="upload_img()" type="button" disabled>전송하기</button>
+
+  <!-- 분류결과 호출 기능 추가 코드 -->
+  <button onclick="result()" , type="button">분류결과 확인</button>
+  <div id="classification-result"></div>
+
   <button onclick="download_img()" , type="button">이미지 다운</button>
   <!--서버에서 이미지를 가져와서 띄울 공간-->
   <div id="addimg">
