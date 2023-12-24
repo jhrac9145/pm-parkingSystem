@@ -16,3 +16,8 @@
 > #### Python 3.10.12
 > #### Flask 3.0.0
 > #### MongoDB7.0.4 - https://www.mongodb.com/docs/current/tutorial/install-mongodb-on-ubuntu/#install-mongodb-community-edition
+> #### mongod --dbpath 'DB경로' ※DB경로를 지정해줘야함
+> #### https://www.mongodb.com/try/download/compass MongoDBCompass
+> #### DB업로드 확인을 위한 GUI 환경제공 툴
+>
+
